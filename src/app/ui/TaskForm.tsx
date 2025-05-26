@@ -6,11 +6,9 @@ type Props = {
 export default function TaskForm({ createTaskAction }: Props) {
 
     return (
-        <div className='text-center'>
-            <form action={createTaskAction}>
-                <input type='text' placeholder='Describe task' />
-                <input type='submit' value='Add Task' />
-            </form>
-        </div>
+        <form className='text-center' action={createTaskAction}>
+            <input name='title' type='text' placeholder='Describe task' />
+            < input type='submit' value='Add Task' />
+        </form >
     );
 }

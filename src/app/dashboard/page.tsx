@@ -1,13 +1,13 @@
-import TaskForm from '../ui/TaskForm.jsx';
-import { db } from '../../db/index.js';
-import { tasks } from '../../db/drizzle/schema.js';
+import TaskForm from '../ui/TaskForm';
+import { db } from '../../db/index';
+import { tasks } from '../../db/drizzle/schema';
 import { revalidatePath } from 'next/cache';
-
-
+import DeleteButton from '../ui/DeleteButton';
+import { eq } from 'drizzle-orm';
 export default async function DashboardPage() {
     const allTasks = await db.select().from(tasks);
     async function createTask(formData: FormData) {
-
+        'use server';
         const title = formData.get('title')?.toString();
         if (!title) return;
         await db.insert(tasks).values({
@@ -17,11 +17,25 @@ export default async function DashboardPage() {
         });
         revalidatePath('/dashboard');
     }
+
+    async function deleteTask(formData: FormData) {
+        'use server';
+        const id = Number(formData.get('id'));
+        if (!id) return;
+        await db.delete(tasks).where(eq(tasks.id, id));
+        revalidatePath('/dashboard');
+    }
+
     return (
         <div>
             <h1>Dashboard</h1>
             <p>Welcome to the dashboard!</p>
             <TaskForm createTaskAction={createTask} />
+            {
+                allTasks.map(task =>
+                    <li>{task.title} <DeleteButton deleteTaskAction={deleteTask} /></li>
+                )
+            }
         </div>
     )
 }
