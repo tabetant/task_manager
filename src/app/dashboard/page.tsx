@@ -4,6 +4,8 @@ import { tasks } from '../../db/drizzle/schema';
 import { revalidatePath } from 'next/cache';
 import DeleteButton from '../ui/DeleteButton';
 import { eq } from 'drizzle-orm';
+import DoneButton from '../ui/DoneButton';
+
 export default async function DashboardPage() {
     const allTasks = await db.select().from(tasks);
     async function createTask(formData: FormData) {
@@ -26,6 +28,14 @@ export default async function DashboardPage() {
         revalidatePath('/dashboard');
     }
 
+    async function doneTask(formData: FormData) {
+        'use server'
+        const id = Number(formData.get('id'));
+        if (!id) return;
+        await db.update(tasks).set({ completed: true }).where(eq(tasks.id, id));
+        revalidatePath('/dashboard');
+    }
+
     return (
         <div>
             <h1>Dashboard</h1>
@@ -33,7 +43,7 @@ export default async function DashboardPage() {
             <TaskForm createTaskAction={createTask} />
             <ul className='text-center'>
                 {allTasks.map(task =>
-                    <li key={task.id}>{task.title} <DeleteButton deleteTaskAction={deleteTask} taskId={task.id} /></li>
+                    <li key={task.id}>{task.title} <DeleteButton deleteTaskAction={deleteTask} taskId={task.id} /> <DoneButton taskId={task.id} doneTaskAction={doneTask} /></li>
                 )
                 }
             </ul>
