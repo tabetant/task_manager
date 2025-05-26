@@ -31,11 +31,12 @@ export default async function DashboardPage() {
             <h1>Dashboard</h1>
             <p>Welcome to the dashboard!</p>
             <TaskForm createTaskAction={createTask} />
-            {
-                allTasks.map(task =>
-                    <li>{task.title} <DeleteButton deleteTaskAction={deleteTask} /></li>
+            <ul className='text-center'>
+                {allTasks.map(task =>
+                    <li key={task.id}>{task.title} <DeleteButton deleteTaskAction={deleteTask} taskId={task.id} /></li>
                 )
-            }
+                }
+            </ul>
         </div>
     )
 }
