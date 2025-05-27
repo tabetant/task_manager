@@ -11,11 +11,13 @@ export default async function DashboardPage() {
     async function createTask(formData: FormData) {
         'use server';
         const title = formData.get('title')?.toString();
-        if (!title) return;
+        const priority = formData.get('priority')?.toString() ?? 'medium';
+        if (!title) return
         await db.insert(tasks).values({
             title,
             completed: false,
-            createdAt: new Date()
+            createdAt: new Date(),
+            priority: priority as 'low' | 'medium' | 'high',
         });
         revalidatePath('/dashboard');
     }
